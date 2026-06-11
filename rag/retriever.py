@@ -1,5 +1,5 @@
 """
-混合检索（Dense、BM25）
+2.混合检索（Dense、BM25）
 """
 import sys
 from pathlib import Path

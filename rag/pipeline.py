@@ -1,8 +1,11 @@
 """
-主流程
+4.主流程
 """
 import sys
 from pathlib import Path
+
+import os
+os.environ["PYTHONIOENCODING"] = "utf-8"
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from rag.config import *
@@ -20,15 +23,27 @@ class TestPilotRAGPipeline:
         print("✅ 就绪！\n")
 
     def ask(self, question):
+        # ───── ① 检索（BGE 负责）─────
         results = self.retriever.retrieve(question)
+        #           ↑ retriever 内部调用 BGE-small-zh 生成向量
+        #           ↑ 然后到 ChromaDB 里找最相似的 5 个 chunk
         if not results:
             return {"question": question,
                     "answer": "抱歉，知识库中没有找到相关内容。",
                     "sources": [], "context": []}
+
+        # ───── ② 拼接上下文 ─────
         context = "\n\n---\n\n".join(
             [f"[文档 {i+1}] (相关度: {r['score']})\n{r['content']}"
              for i, r in enumerate(results)])
+
+        # ───── ③ 生成（DeepSeek API 负责）─────
         prediction = self.rag_module(context=context, question=question)
+        #                 ↑ rag_module 内部：
+        #                 ↑   dspy.LM() 加载 DeepSeek
+        #                 ↑   拼接 prompt: context + question
+        #                 ↑   模型推理 → 输出回答文本
+
         return {"question": question, "answer": prediction.answer,
                 "sources": prediction.sources, "context": results}
 
