@@ -27,3 +27,5 @@ rich>=13.0.0
 langchain-text-splitters
 langchain-core
 requests
+datasets
+openai

@@ -4,9 +4,6 @@
 import sys
 from pathlib import Path
 
-import os
-os.environ["PYTHONIOENCODING"] = "utf-8"
-
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from rag.config import *
 from rag.retriever import HybridRetriever
@@ -34,7 +31,7 @@ class TestPilotRAGPipeline:
 
         # ───── ② 拼接上下文 ─────
         context = "\n\n---\n\n".join(
-            [f"[文档 {i+1}] (相关度: {r['score']})\n{r['content']}"
+            [f"[文档 {i + 1}] (相关度: {r['score']})\n{r['content']}"
              for i, r in enumerate(results)])
 
         # ───── ③ 生成（DeepSeek API 负责）─────
