@@ -21,8 +21,8 @@ LLM_API_KEY = os.getenv("DEEPSEEK_API_KEY")
 LLM_API_BASE = "https://api.deepseek.com/v1"
 LLM_MODEL_NAME = "deepseek-chat"
 
-LLM_TEMPERATURE = 0.7
-MAX_GENERATION_TOKENS = 512
+LLM_TEMPERATURE = 0.2
+MAX_GENERATION_TOKENS = 1024
 
 # ===== Embedding =====
 EMBEDDING_MODEL = "BAAI/bge-small-zh-v1.5"
@@ -35,6 +35,3 @@ CHUNK_OVERLAP = 64  # 为什么 64？512 的 12.5%，覆盖被切断的句子；
 # ===== 检索 =====
 RETRIEVAL_TOP_K = 5  # 5 个 chunk × 512 token ≈ 2560 token，Qwen 4K 上下文刚好
 BM25_WEIGHT = 0.3  # 30% 关键词检索（保底精确匹配），70% 语义检索
-
-# ===== 生成 =====
-MAX_GENERATION_TOKENS = 1024

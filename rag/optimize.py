@@ -9,7 +9,7 @@ import dspy
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from rag.config import *
 from rag.retriever import HybridRetriever
-from rag.generator import LlamaCppLM, RAGModule
+from rag.generator import RAGModule
 from rag.evaluate import load_test_questions
 
 
@@ -18,7 +18,13 @@ def run_optimization():
     print("🔧 DSPy 自动优化 (BootstrapFewShot)")
     print("=" * 60)
 
-    lm = LlamaCppLM(LLM_MODEL_PATH, LLM_N_CTX, LLM_N_THREADS, LLM_TEMPERATURE)
+    lm = dspy.LM(
+        model=LLM_MODEL_NAME,
+        api_base=LLM_API_BASE,
+        api_key=LLM_API_KEY,
+        temperature=LLM_TEMPERATURE,
+        max_tokens=MAX_GENERATION_TOKENS,
+    )
     dspy.configure(lm=lm)
     retriever = HybridRetriever()
     questions = load_test_questions()
@@ -27,7 +33,7 @@ def run_optimization():
     for q in questions[:8]:
         results = retriever.retrieve(q["question"])
         context = "\n\n---\n\n".join(
-            [f"[文档 {i+1}]\n{r['content']}" for i, r in enumerate(results)])
+            [f"[文档 {i + 1}]\n{r['content']}" for i, r in enumerate(results)])
         example = dspy.Example(
             context=context, question=q["question"],
             answer=q["ground_truth"],
@@ -40,7 +46,7 @@ def run_optimization():
 
     def simple_metric(example, pred, trace=None):
         return sum(1 for kw in example.answer.split() if kw in pred.answer) \
-               / max(len(example.answer.split()), 1)
+            / max(len(example.answer.split()), 1)
 
     optimizer = dspy.BootstrapFewShot(
         metric=simple_metric,
