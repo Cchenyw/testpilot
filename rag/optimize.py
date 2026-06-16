@@ -68,7 +68,7 @@ def run_optimization():
     for q in questions:
         results = retriever.retrieve(q["question"])
         context = "\n\n---\n\n".join(
-            [f"[文档 {i+1}]\n{r['content']}" for i, r in enumerate(results)])
+            [f"[文档 {i + 1}]\n{r['content']}" for i, r in enumerate(results)])
         example = dspy.Example(
             context=context,
             question=q["question"],
